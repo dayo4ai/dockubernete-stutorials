@@ -1,0 +1,26 @@
+graph TD
+    A[Initialize Swarm] --> B[Manager Node]
+    B --> C[Deploy Stack]
+    
+    subgraph "Service Deployment"
+        C --> D[Web Service]
+        C --> E[Database Service]
+    end
+    
+    subgraph "Scaling"
+        D --> F[Scale Up]
+        D --> G[Scale Down]
+    end
+    
+    subgraph "Load Balancing"
+        F --> H[Load Balancer]
+        G --> H
+    end
+
+    classDef init fill:#f9f,stroke:#333
+    classDef service fill:#bbf,stroke:#333
+    classDef scale fill:#bfb,stroke:#333
+    
+    class A,B init
+    class C,D,E service
+    class F,G,H scale

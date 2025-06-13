@@ -1,0 +1,7 @@
+fastapi
+sqlmodel
+uvicorn
+tortoise-orm
+aiofiles
+
+-e https://github.com/fastapi-admin/fastapi-admin.git#egg=fastapi-admin

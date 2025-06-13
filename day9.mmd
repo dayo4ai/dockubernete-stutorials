@@ -1,0 +1,9 @@
+graph TD
+    A[Code Push] --> B{Run Tests}
+    B -->|Success| C[Build Docker Image]
+    B -->|Failure| D[Notify Team]
+    C --> E[Push to Registry]
+    E --> F[Deploy to Staging]
+    F --> G{Manual Approval}
+    G -->|Approved| H[Deploy to Production]
+    G -->|Rejected| I[Review Required]

@@ -1,0 +1,8 @@
+graph LR
+    A[API Gateway] --> B[User Service]
+    A --> C[Post Service]
+    A --> D[Media Service]
+    
+    B --> E[(User DB)]
+    C --> F[(Post DB)]
+    D --> G[Media Storage]

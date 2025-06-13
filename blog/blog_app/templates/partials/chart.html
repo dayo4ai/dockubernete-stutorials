@@ -1,0 +1,45 @@
+<div class="chart-container" style="position: relative; height:300px; width:100%">
+    <canvas id="blogChart"></canvas>
+</div>
+<script>
+    (function() {
+        const ctx = document.getElementById('blogChart').getContext('2d');
+        if (window.chartInstance) {
+            window.chartInstance.destroy();
+        }
+        window.chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ labels | tojson }},
+                datasets: [{
+                    data: {{ values | tojson }},
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(255, 206, 86, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Blog Posts Status',
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            }
+        });
+    })();
+</script>

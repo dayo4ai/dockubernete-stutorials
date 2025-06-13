@@ -1,0 +1,46 @@
+graph TB
+    %% Setup Phase
+    A[Start] --> B[Create Project Directory]
+    B --> C[Create docker-compose.yml]
+    C --> D[Define MySQL Service]
+    
+    %% Configuration Details
+    D --> E[Set Environment Variables]
+    D --> F[Configure Volume]
+    D --> G[Set Port Mapping]
+    
+    %% Execution Flow
+    subgraph "Docker Compose Commands"
+        H[docker-compose up -d] --> I{Check Status}
+        I -->|Success| J[MySQL Running]
+        I -->|Failure| K[Check Logs]
+        K --> L[Troubleshoot]
+        L --> H
+    end
+    
+    %% Volume Operations
+    subgraph "Data Persistence"
+        M[Create Volume] --> N[Store MySQL Data]
+        N --> O[Container Restart]
+        O --> P{Data Preserved?}
+        P -->|Yes| Q[Success]
+        P -->|No| R[Check Volume]
+    end
+    
+    %% Management Commands
+    subgraph "Management"
+        S[docker-compose ps]
+        T[docker-compose logs]
+        U[docker-compose down]
+    end
+    
+    %% Styling
+    classDef setup fill:#e1f5fe,stroke:#01579b
+    classDef execution fill:#e8f5e9,stroke:#1b5e20
+    classDef volume fill:#fff3e0,stroke:#e65100
+    classDef command fill:#f3e5f5,stroke:#4a148c
+    
+    class A,B,C,D setup
+    class H,I,J,K,L execution
+    class M,N,O,P,Q,R volume
+    class S,T,U command

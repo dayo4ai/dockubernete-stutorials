@@ -1,0 +1,16 @@
+graph TD
+    A[Start] --> B[Create Named Volume]
+    B --> C[Run MySQL Container]
+    C --> D[Mount Volume]
+    D --> E[Write Data to MySQL]
+    
+    %% Container Lifecycle
+    E --> F{Stop Container}
+    F --> G[Remove Container]
+    G --> H[Create New Container]
+    H --> I[Mount Same Volume]
+    
+    %% Data Verification
+    I --> J[Verify Data Persistence]
+    J -->|Data Exists| K[Success]
+    J -->|Data Missing| L[Troubleshoot]

@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  api-gateway:
+    build: ./gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - user-service
+      - post-service
+      - media-service
+
+  user-service:
+    build: ./user-service
+    environment:
+      MONGO_URI: mongodb://users-db:27017/users
+    depends_on:
+      - users-db
+
+  post-service:
+    build: ./post-service
+    environment:
+      MONGO_URI: mongodb://posts-db:27017/posts
+    depends_on:
+      - posts-db
+
+  media-service:
+    build: ./media-service
+    volumes:
+      - media_data:/uploads
+
+  users-db:
+    image: mongo:latest
+    volumes:
+      - users_data:/data/db
+
+  posts-db:
+    image: mongo:latest
+    volumes:
+      - posts_data:/data/db
+
+volumes:
+  users_data:
+  posts_data:
+  media_data:

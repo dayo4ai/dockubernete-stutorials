@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Admin Dashboard</h2>
+        <a href="/" class="btn btn-primary">View Blog</a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title mb-4">Blog Posts</h3>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Created</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                        <tr>
+                            <td>{{ post.title }}</td>
+                            <td>{{ post.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if post.is_published %}
+                                <span class="badge bg-success">Published</span>
+                                {% else %}
+                                <span class="badge bg-warning">Draft</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if post.is_published %}
+                                <button class="btn btn-warning btn-sm"
+                                        hx-post="/admin/posts/{{ post.id }}/unpublish"
+                                        hx-swap="closest tr">
+                                    Unpublish
+                                </button>
+                                {% else %}
+                                <button class="btn btn-success btn-sm"
+                                        hx-post="/admin/posts/{{ post.id }}/publish"
+                                        hx-swap="closest tr">
+                                    Publish
+                                </button>
+                                {% endif %}
+                                <button class="btn btn-danger btn-sm"
+                                        hx-delete="/admin/posts/{{ post.id }}"
+                                        hx-confirm="Are you sure you want to delete this post?"
+                                        hx-target="closest tr"
+                                        hx-swap="outerHTML">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

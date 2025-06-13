@@ -1,0 +1,11 @@
+graph LR
+    subgraph "Build Stage"
+        A[Source Code] --> B[Dependencies]
+        B --> C[Compile]
+    end
+    
+    subgraph "Production Stage"
+        C --> D[Minimal Base Image]
+        D --> E[Copy Artifacts]
+        E --> F[Final Image]
+    end

@@ -1,0 +1,27 @@
+graph LR
+    subgraph "Network Setup"
+        A[Create Network] --> B[my-app-network]
+    end
+    
+    subgraph "Database Container"
+        B --> C[PostgreSQL]
+        C --> D[Environment Setup]
+    end
+    
+    subgraph "Web Application"
+        B --> E[Flask App]
+        E --> F[Connect to DB]
+    end
+
+    subgraph "Testing"
+        F --> G[HTTP Test]
+        F --> H[Ping Test]
+    end
+
+    classDef network fill:#f9f,stroke:#333
+    classDef container fill:#bbf,stroke:#333
+    classDef test fill:#bfb,stroke:#333
+    
+    class A,B network
+    class C,D,E,F container
+    class G,H test

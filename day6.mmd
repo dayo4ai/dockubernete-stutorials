@@ -1,0 +1,20 @@
+graph TB
+    A[Application] --> B{Metrics & Logs}
+    B --> C[Prometheus]
+    B --> D[Elasticsearch]
+    
+    C --> E[Grafana]
+    D --> F[Kibana]
+    
+    subgraph "Visualization"
+        E --> G[Metrics Dashboard]
+        F --> H[Log Analysis]
+    end
+
+    classDef app fill:#f9f,stroke:#333
+    classDef collector fill:#bbf,stroke:#333
+    classDef viz fill:#bfb,stroke:#333
+    
+    class A app
+    class B,C,D collector
+    class E,F,G,H viz
