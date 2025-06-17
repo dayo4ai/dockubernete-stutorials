@@ -1,5 +1,23 @@
 # Day 10: Multi-Stage Docker Builds - Making Your Production Apps Lighter and Faster
 
+
+
+
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+
+graph LR
+    subgraph "Build Stage"
+        A[Source Code] --> B[Dependencies]
+        B --> C[Compile]
+    end
+    
+    subgraph "Production Stage"
+        C --> D[Minimal Base Image]
+        D --> E[Copy Artifacts]
+        E --> F[Final Image]
+    end
+```
 ## Real-World Scenario
 Imagine you're leading a team at a fast-growing startup. Your Flask application works great in development, but in production, you're facing issues:
 - Your Docker images are massive (800MB+)
@@ -115,3 +133,5 @@ Try optimizing your own project:
 - [Docker Multi-Stage Builds](https://docs.docker.com/build/building/multi-stage/)
 - [Python Docker Best Practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
 - [Nginx Configuration Guide](https://nginx.org/en/docs/)
+
+

@@ -17,7 +17,7 @@
                 </thead>
                 <tbody>
                     {% for post in posts %}
-                    <tr>
+                    <tr data-post-id="{{ post.id }}">
                         <td>{{ post.title }}</td>
                         <td>{{ post.created_at.strftime('%Y-%m-%d') }}</td>
                         <td>
@@ -34,6 +34,7 @@
                             <button class="btn btn-success btn-sm" hx-post="/admin/posts/{{ post.id }}/publish" hx-swap="outerHTML">Publish</button>
                             {% endif %}
                             <button class="btn btn-danger btn-sm" hx-delete="/admin/posts/{{ post.id }}" hx-confirm="Are you sure?">Delete</button>
+                            <button class="btn btn-primary btn-sm" onclick="editPost({{ post.id }})" data-bs-toggle="modal" data-bs-target="#editPostModal">Edit</button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -42,4 +43,168 @@
         </div>
     </div>
 </div>
+
+<!-- Edit Post Modal -->
+<div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editPostModalLabel">Edit Post</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editPostForm" method="post" hx-put="/admin/posts/{{ post.id }}">
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="content" class="form-label">Content</label>
+            <div id="editor-edit"></div>
+            <input type="hidden" name="content">
+          </div>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Post Modal -->
+<div class="modal fade" id="newPostModal" tabindex="-1" aria-labelledby="newPostModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newPostModalLabel">New Post</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="newPostForm" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Content</label>
+            <div id="editor-new" style="height: 300px;"></div>
+            <input type="hidden" name="content">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Image</label>
+            <input type="file" class="form-control" name="image" accept="image/*">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let quillNew;
+let quillEdit;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Quill editors
+    quillNew = new Quill('#editor-new', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'header': 1 }, { 'header': 2 }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
+    quillEdit = new Quill('#editor-edit', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'header': 1 }, { 'header': 2 }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Handle new post form submission
+    document.getElementById('newPostForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        formData.set('content', quillNew.root.innerHTML);
+        
+        try {
+            const response = await fetch('/admin/posts', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const html = await response.text();
+                document.querySelector('tbody').insertAdjacentHTML('beforeend', html);
+                this.reset();
+                quillNew.setContents([]);
+                bootstrap.Modal.getInstance(document.getElementById('newPostModal')).hide();
+            } else {
+                console.error('Error:', response.statusText);
+                alert('Error creating post');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error creating post');
+        }
+    });
+});
+
+async function editPost(id) {
+    try {
+        const response = await fetch(`/admin/posts/${id}`);
+        const post = await response.json();
+        
+        const form = document.getElementById('editPostForm');
+        form.setAttribute('data-post-id', id);
+        form.elements.title.value = post.title;
+        quillEdit.root.innerHTML = post.content;
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error loading post');
+    }
+}
+
+document.getElementById('editPostForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const id = this.getAttribute('data-post-id');
+    const formData = new FormData(this);
+    formData.set('content', quillEdit.root.innerHTML);
+    
+    try {
+        const response = await fetch(`/admin/posts/${id}`, {
+            method: 'PUT',
+            body: formData
+        });
+        
+        if (response.ok) {
+            const html = await response.text();
+            document.querySelector(`tr[data-post-id="${id}"]`).outerHTML = html;
+            bootstrap.Modal.getInstance(document.getElementById('editPostModal')).hide();
+        } else {
+            console.error('Error:', response.statusText);
+            alert('Error updating post');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating post');
+    }
+});
+</script>
 {% endblock %}

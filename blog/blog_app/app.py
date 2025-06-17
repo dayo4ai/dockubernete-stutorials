@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException, Depends
+from typing import Optional
+from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException, Depends, BackgroundTasks
+from fastapi.encoders import jsonable_encoder
 from sqlmodel import SQLModel, create_engine, Session, select
 from models import BlogPost, create_db_and_tables
 from fastapi.responses import HTMLResponse
@@ -8,6 +10,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles  # Add this import at the top
 import os
 import secrets
+import shutil
 
 # Database configuration
 DATABASE_URL = "sqlite:///blog.db"
@@ -130,6 +133,117 @@ async def delete_post(post_id: int, admin: str = Depends(get_current_admin)):
         session.delete(post)
         session.commit()
         return {"status": "success"}
+
+# Add this route for creating posts
+@app.post("/admin/posts")
+async def create_post(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    title: str = Form(...),
+    content: str = Form(...),
+    image: Optional[UploadFile] = File(None),
+    admin: str = Depends(get_current_admin)
+):
+    try:
+        with Session(engine) as session:
+            # Create uploads directory if it doesn't exist
+            os.makedirs("static/uploads", exist_ok=True)
+            
+            post = BlogPost(
+                title=title,
+                content=content,
+                is_published=False
+            )
+            
+            if image and image.filename:
+                # Save file with a unique name to prevent overwriting
+                file_ext = os.path.splitext(image.filename)[1]
+                unique_filename = f"{secrets.token_hex(8)}{file_ext}"
+                file_path = os.path.join("static/uploads", unique_filename)
+                
+                async def save_upload():
+                    with open(file_path, "wb") as buffer:
+                        shutil.copyfileobj(image.file, buffer)
+                
+                await save_upload()
+                post.image_path = f"/static/uploads/{unique_filename}"
+            
+            session.add(post)
+            session.commit()
+            session.refresh(post)
+            
+            return templates.TemplateResponse(
+                "partials/post_row.html",
+                {"request": request, "post": post}
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Add route for getting a post
+@app.get("/admin/posts/{post_id}")
+async def get_post(post_id: int, admin: str = Depends(get_current_admin)):
+    with Session(engine) as session:
+        post = session.get(BlogPost, post_id)
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        return {
+            "id": post.id,
+            "title": post.title,
+            "content": post.content,
+            "is_published": post.is_published,
+            "image_path": post.image_path
+        }
+
+# Add route for updating posts
+@app.put("/admin/posts/{post_id}")
+async def update_post(
+    post_id: int,
+    request: Request,
+    background_tasks: BackgroundTasks,
+    title: str = Form(...),
+    content: str = Form(...),
+    image: Optional[UploadFile] = File(None),
+    admin: str = Depends(get_current_admin)
+):
+    try:
+        with Session(engine) as session:
+            post = session.get(BlogPost, post_id)
+            if not post:
+                raise HTTPException(status_code=404, detail="Post not found")
+            
+            post.title = title
+            post.content = content
+            
+            if image and image.filename:
+                # Save file with a unique name
+                file_ext = os.path.splitext(image.filename)[1]
+                unique_filename = f"{secrets.token_hex(8)}{file_ext}"
+                file_path = os.path.join("static/uploads", unique_filename)
+                
+                async def save_upload():
+                    with open(file_path, "wb") as buffer:
+                        shutil.copyfileobj(image.file, buffer)
+                
+                await save_upload()
+                
+                # Delete old image if exists
+                if post.image_path:
+                    old_file = os.path.join("static", post.image_path.lstrip("/"))
+                    if os.path.exists(old_file):
+                        os.remove(old_file)
+                
+                post.image_path = f"/static/uploads/{unique_filename}"
+            
+            session.add(post)
+            session.commit()
+            session.refresh(post)
+            
+            return templates.TemplateResponse(
+                "partials/post_row.html",
+                {"request": request, "post": post}
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,82 +1,128 @@
 # Persistent Data Storage with Docker Volumes
 
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+
+graph TB
+    %% Setup Phase
+    A[Start] --> B[Create Project Directory]
+    B --> C[Create docker-compose.yml]
+    C --> D[Define MySQL Service]
+    
+    %% Configuration Details
+    D --> E[Set Environment Variables]
+    D --> F[Configure Volume]
+    D --> G[Set Port Mapping]
+    
+    %% Execution Flow
+    subgraph "Docker Compose Commands"
+        H[docker-compose up -d] --> I{Check Status}
+        I -->|Success| J[MySQL Running]
+        I -->|Failure| K[Check Logs]
+        K --> L[Troubleshoot]
+        L --> H
+    end
+    
+    %% Volume Operations
+    subgraph "Data Persistence"
+        M[Create Volume] --> N[Store MySQL Data]
+        N --> O[Container Restart]
+        O --> P{Data Preserved?}
+        P -->|Yes| Q[Success]
+        P -->|No| R[Check Volume]
+    end
+    
+    %% Management Commands
+    subgraph "Management"
+        S[docker-compose ps]
+        T[docker-compose logs]
+        U[docker-compose down]
+    end
+    
+    %% Styling
+    classDef setup fill:#e1f5fe,stroke:#01579b
+    classDef execution fill:#e8f5e9,stroke:#1b5e20
+    classDef volume fill:#fff3e0,stroke:#e65100
+    classDef command fill:#f3e5f5,stroke:#4a148c
+    
+    class A,B,C,D setup
+    class H,I,J,K,L execution
+    class M,N,O,P,Q,R volume
+    class S,T,U command
+```
+
 ## Introduction
 
-When working with Docker containers, one critical challenge is data persistence. By default, any data written inside a container is lost when the container is removed. This guide explores Docker volumes as the solution to this problem.
+When working with Docker containers, one critical challenge is data persistence. By default, any data written inside a container is lost when the container is removed. This guide demonstrates how Docker volumes solve this problem, with a practical example showing data preservation.
 
 ## Understanding Docker Volumes
 
-### Types of Volume Mounts
-- Named volumes
-- Bind mounts
-- tmpfs mounts (memory-only)
+Docker volumes provide persistent storage that exists independently of containers. When a container is removed and recreated using the same volume, the data remains intact.
 
-### Why Use Volumes?
-- Data persistence across container restarts
-- Share data between containers
-- Better backup and migration strategies
+### Key Benefits
+- Data persists across container lifecycles
+- Efficient data sharing between containers
+- Independent backup and restore capabilities
 
-## Hands-On Practice
+## Practical Example: MySQL with Persistent Storage
 
-### 1. Creating a MySQL Container with Named Volume
+### 1. Initial Setup
 
 ```bash
+# Create a MySQL container with a named volume
 docker run -d \
     --name mysql-db \
-    -e MYSQL_ROOT_PASSWORD=rootpassword \
-    -e MYSQL_DATABASE=testdb \
+    -e MYSQL_ROOT_PASSWORD=secretpass \
     -v mysql_data:/var/lib/mysql \
     mysql:8.0
 ```
 
-### 2. Testing Data Persistence
+### 2. Create Test Data
 
-Connect to MySQL and create test data:
 ```bash
+# Connect to MySQL
 docker exec -it mysql-db mysql -u root -p
 
-# Inside MySQL shell
-CREATE DATABASE IF NOT EXISTS testdb;
+# Create and populate test table
+CREATE DATABASE testdb;
 USE testdb;
 CREATE TABLE users (id INT, name VARCHAR(50));
-INSERT INTO users VALUES (1, 'John');
+INSERT INTO users VALUES (1, 'Alice');
 ```
 
-### 3. Verifying Data Persistence
+### 3. Test Data Persistence
 
 ```bash
-# Stop and remove container
-docker stop mysql-db
-docker rm mysql-db
+# Remove the container
+docker rm -f mysql-db
 
-# Recreate container with same volume
+# Create new container with same volume
 docker run -d \
     --name mysql-db \
-    -e MYSQL_ROOT_PASSWORD=rootpassword \
+    -e MYSQL_ROOT_PASSWORD=secretpass \
     -v mysql_data:/var/lib/mysql \
     mysql:8.0
+
+# Verify data still exists
+docker exec -it mysql-db mysql -u root -p testdb -e "SELECT * FROM users;"
 ```
 
-### 4. Volume Management Commands
+## Volume Management
 
 ```bash
-# List volumes
+# List all volumes
 docker volume ls
 
 # Inspect volume details
 docker volume inspect mysql_data
 
-# Clean up unused volumes
+# Remove unused volumes
 docker volume prune
 ```
 
 ## Best Practices
-- Always use named volumes for databases
-- Regularly backup volume data
-- Use volume labels for better organization
-- Remove unused volumes to free up space
+- Use named volumes for easier management
+- Implement regular backup strategies
+- Label volumes appropriately
+- Clean up unused volumes periodically
 
-## Next Steps
-- Explore volume drivers for cloud storage
-- Learn about volume backup strategies
-- Understand volume sharing between containers

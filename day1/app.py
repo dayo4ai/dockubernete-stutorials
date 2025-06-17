@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template_string
-
+import os
 app = Flask(__name__)
 
 # Main form HTML template
@@ -128,4 +128,5 @@ def submit():
     return render_template_string(success_html, message=response_data["message"])
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port, debug=False)

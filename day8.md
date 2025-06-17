@@ -1,5 +1,19 @@
 # Building a Social Media Platform with Microservices using Docker & Kubernetes
 
+
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+
+graph LR
+    A[API Gateway] --> B[User Service]
+    A --> C[Post Service]
+    A --> D[Media Service]
+    
+    B --> E[(User DB)]
+    C --> F[(Post DB)]
+    D --> G[Media Storage]
+```
+
 ## Introduction (3 minutes)
 In this tutorial, we'll build a simplified version of a social media platform using microservices architecture. We'll create services that handle users, posts, and media content, demonstrating how modern social platforms can be built using containers and Kubernetes.
 
@@ -154,3 +168,5 @@ curl http://social.local/api/posts
 - Covered scalability with multiple replicas
 - Implemented health checks and resource limits
 - Next: Adding authentication and real-time features
+
+

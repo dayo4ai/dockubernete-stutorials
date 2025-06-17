@@ -1,5 +1,39 @@
 # Docker Networking - Container Communication
 
+
+
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+
+graph LR
+    subgraph "Network Setup"
+        A[Create Network] --> B[my-app-network]
+    end
+    
+    subgraph "Database Container"
+        B --> C[PostgreSQL]
+        C --> D[Environment Setup]
+    end
+    
+    subgraph "Web Application"
+        B --> E[Flask App]
+        E --> F[Connect to DB]
+    end
+
+    subgraph "Testing"
+        F --> G[HTTP Test]
+        F --> H[Ping Test]
+    end
+
+    classDef network fill:#f9f,stroke:#333
+    classDef container fill:#bbf,stroke:#333
+    classDef test fill:#bfb,stroke:#333
+    
+    class A,B network
+    class C,D,E,F container
+    class G,H test
+```
+
 ## Overview
 - **Duration**: 16-18 minutes
 - **Topic**: Understanding and implementing Docker container networking
@@ -78,3 +112,5 @@ docker exec web-app ping app-database
 - Network isolation advantages
 - Common troubleshooting approaches
 - Preview of upcoming content
+
+

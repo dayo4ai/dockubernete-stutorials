@@ -1,5 +1,19 @@
 # Secure Docker Deployment with Traefik: Building a Blog Platform with Protected Admin Panel
 
+
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+
+graph LR
+    A[API Gateway] --> B[User Service]
+    A --> C[Post Service]
+    A --> D[Media Service]
+    
+    B --> E[(User DB)]
+    C --> F[(Post DB)]
+    D --> G[Media Storage]
+```
+
 In this hands-on guide, we'll secure a multi-user blog platform using Docker and Traefik. This is perfect for small businesses or personal bloggers who need a secure way to manage their content.
 
 ## Introduction (2 minutes)
@@ -184,3 +198,5 @@ echo $(htpasswd -nb blogadmin strongpassword123) | sed -e s/\\$/\\$\\$/g
 - Preview of content management features
 
 > **Note**: Replace `blogadmin` and `strongpassword123` with secure credentials in production.
+
+
