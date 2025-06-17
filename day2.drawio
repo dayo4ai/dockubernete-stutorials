@@ -1,0 +1,13 @@
+<mxfile host="65bd71144e">
+    <diagram id="mvTK-2F7sYYmCjzgr3sv" name="Page-1">
+        <mxGraphModel dx="680" dy="573" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="graph TD&#xa;    A[Start] --&gt; B[Create Named Volume]&#xa;    B --&gt; C[Run MySQL Container]&#xa;    C --&gt; D[Mount Volume]&#xa;    D --&gt; E[Write Data to MySQL]&#xa;    &#xa;    %% Container Lifecycle&#xa;    E --&gt; F{Stop Container}&#xa;    F --&gt; G[Remove Container]&#xa;    G --&gt; H[Create New Container]&#xa;    H --&gt; I[Mount Same Volume]&#xa;    &#xa;    %% Data Verification&#xa;    I --&gt; J[Verify Data Persistence]&#xa;    J --&gt;|Data Exists| K[Success]&#xa;    J --&gt;|Data Missing| L[Troubleshoot]" style="shadow=0;dashed=0;align=left;strokeWidth=1;shape=mxgraph.mermaid.abstract.mermaid;labelBackgroundColor=#ffffff;noLabel=1;theme=default;" vertex="1" parent="1">
+                    <mxGeometry x="300" y="180" width="310" height="240" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

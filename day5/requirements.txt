@@ -1,1 +1,6 @@
-Flask
+flask
+prometheus_client
+psycopg2-binary
+Faker
+flask-restx
+flask-cors

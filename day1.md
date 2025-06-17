@@ -1,6 +1,24 @@
-Video 1: Basic Web Application with Docker (Beginner)
+## Video 1: Basic Web Application with Docker (Beginner)
 Duration: 12-15 minutes
 Intro (2 minutes)
+
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+
+
+graph TD;
+    A[Docker Mastery Series] --> B[What is Containerization?];
+    A --> C[Why Docker Matters];
+    A --> D[Docker vs Traditional Deployment];
+    A --> E[Hands-On Demo];
+    E --> F[Create Flask App];
+    E --> G[Create requirements.txt];
+    E --> H[Write Dockerfile];
+    E --> I[Build & Run];
+    I --> J[Test in Browser];
+    J --> K[Key Takeaways];
+    K --> L[Next Video Preview];
+``` 
 
 Welcome to Docker mastery series
 What we'll build: Simple Flask app in Docker
@@ -24,6 +42,19 @@ Docker vs traditional deployment
 - No more dependency drama or environment emergencies! 🏠
 
 Hands-On Demo (8 minutes)
+
+Prerequistite
+
+```
+uv venv
+
+
+source .venv/bin/activate
+
+
+ uv pip install -r requirements.txt
+```
+
 Step 1: Create Flask App (2 minutes)
 python# app.py
 
@@ -59,8 +90,8 @@ Step 4: Build & Run (2 minutes)
 
 ```bash
 
-docker build -t flask-app .
-docker run -p 5000:5000 flask-app
+docker build -t simple-flask-app .
+docker run -p 5000:5000 simple-flask-app
 ```
 
 
@@ -71,22 +102,3 @@ Test in browser: http://localhost:5000
 Key takeaways
 Next video preview
 
-```mermaid
-%%{init: {'theme': 'forest'}}%%
-
-
-
-
-graph TD;
-    A[Docker Mastery Series] --> B[What is Containerization?];
-    A --> C[Why Docker Matters];
-    A --> D[Docker vs Traditional Deployment];
-    A --> E[Hands-On Demo];
-    E --> F[Create Flask App];
-    E --> G[Create requirements.txt];
-    E --> H[Write Dockerfile];
-    E --> I[Build & Run];
-    I --> J[Test in Browser];
-    J --> K[Key Takeaways];
-    K --> L[Next Video Preview];
-``` 

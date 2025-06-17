@@ -1,5 +1,31 @@
 # Day 6: Monitoring and Logging with Docker
 
+
+
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+
+graph TB
+    A[Application] --> B{Metrics & Logs}
+    B --> C[Prometheus]
+    B --> D[Elasticsearch]
+    
+    C --> E[Grafana]
+    D --> F[Kibana]
+    
+    subgraph "Visualization"
+        E --> G[Metrics Dashboard]
+        F --> H[Log Analysis]
+    end
+
+    classDef app fill:#f9f,stroke:#333
+    classDef collector fill:#bbf,stroke:#333
+    classDef viz fill:#bfb,stroke:#333
+    
+    class A app
+    class B,C,D collector
+    class E,F,G,H viz
+```
 This guide explores essential monitoring and logging concepts for Docker containers, demonstrating practical implementation using popular tools.
 
 ## Video Overview
@@ -214,3 +240,5 @@ System health
 User behavior
 
 ```
+
+

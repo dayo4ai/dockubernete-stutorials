@@ -1,5 +1,20 @@
 # CI/CD Pipeline for Dockerized Applications
 
+
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+
+graph TD
+    A[Code Push] --> B{Run Tests}
+    B -->|Success| C[Build Docker Image]
+    B -->|Failure| D[Notify Team]
+    C --> E[Push to Registry]
+    E --> F[Deploy to Staging]
+    F --> G{Manual Approval}
+    G -->|Approved| H[Deploy to Production]
+    G -->|Rejected| I[Review Required]
+```
+
 ## Introduction
 
 In today's fast-paced software development environment, automating deployments is crucial. This guide explores practical implementation of CI/CD pipelines for Docker applications, comparing GitHub Actions and Jenkins approaches.
@@ -158,3 +173,6 @@ git push origin main
 - Image build failures: Check Dockerfile syntax
 - Push failures: Verify registry credentials
 - Deployment failures: Check server connectivity
+
+
+

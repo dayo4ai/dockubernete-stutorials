@@ -9,7 +9,7 @@
             <div class="card mb-4 blog-post">
                 <div class="card-body">
                     <h2 class="card-title h4">{{ post.title }}</h2>
-                    <p class="card-text">{{ post.content[:200] }}...</p>
+                    <div class="card-text rich-content">{{ post.content | safe }}</div>
                     {% if post.image_path %}
                     <img src="{{ post.image_path }}" class="img-fluid mb-3" alt="{{ post.title }}">
                     {% endif %}
